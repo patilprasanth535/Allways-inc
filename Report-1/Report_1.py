@@ -21,7 +21,7 @@ csv_file = pd.merge(csv_file, frame, on='Stock')
 piv = csv_file.pivot_table(['Open', 'High'], rows='Month', cols='Year', aggfunc='sum')
 print piv
 piv.to_excel('C:\Users\prasanth\Desktop\gg.xls')
-
+hgfh
 book = open_workbook('C:\Users\prasanth\Desktop\gg.xls')
 sheet0 = book.sheet_by_index(0)
 borders = Borders()
