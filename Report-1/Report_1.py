@@ -1,7 +1,8 @@
 import pandas as pd
 from xlrd import open_workbook
 from xlwt import Workbook, XFStyle
-from Report_styles import ReportStyles
+from Styles.Report_styles import ReportStyles
+from pandas import ExcelWriter
 
 def main():
     # Here we are reading the raw data csv file
@@ -34,11 +35,24 @@ def main():
         ['Open', 'High'], rows='Month', cols='Year',
         margins=True, aggfunc='count')
     #writing pivot table to an excel
-    piv.to_excel('C:\Users\prasanth\Desktop\gg.xls')
-    #opening the excel file
-    book = open_workbook('C:\Users\prasanth\Desktop\gg.xls')
+    piv.to_excel('temp.xls')
+    book = open_workbook('temp.xls')
     #reading the first sheet from excel
     sheet0 = book.sheet_by_index(0)
+    col_cnt = sheet0.ncols
+    row_cnt = sheet0.nrows
+    pd1 = pd.read_excel(io='temp.xls', sheetname='Sheet1')
+    pd2 = pd.read_excel(io='temp.xls', sheetname='Sheet1')
+    writer = ExcelWriter('temp1.xls')
+    pd1.to_excel(writer,'Sheet1',startcol=0, startrow =2)
+    pd2.to_excel(writer,'Sheet1',startcol=(col_cnt+2),startrow =2)
+    writer.save()
+
+    book = open_workbook('temp1.xls')
+    #reading the first sheet from excel
+    sheet0 = book.sheet_by_index(0)
+    col_cnt1 = sheet0.ncols
+    row_cnt1 = sheet0.nrows
 
     currency = XFStyle()
     currency.borders = re_style.borders_light()
@@ -50,14 +64,24 @@ def main():
     headings.alignment = re_style.align_hor_center()
     headings.font = re_style.text_bold()
 
-    col_cnt = sheet0.ncols
-    row_cnt = sheet0.nrows
+    no_borders = XFStyle()
+    no_borders.borders = re_style.no_borders()
+
+
     wb = Workbook()
-    ws = wb.add_sheet('Type examples', cell_overwrite_ok=True)
-    for row in range(row_cnt):
-        for col in range(col_cnt):
+    ws = wb.add_sheet('Sample_Report', cell_overwrite_ok=True)
+    for row in range(row_cnt1):
+        for col in range(col_cnt1):
             val = sheet0.cell_value(row, col)
-            if row > 2 and col > 0:
+            if row < 2:
+                ws.row(row).write(col, val, no_borders)
+            elif col == (col_cnt+2):
+                ws.row(row).write(col, val, headings)
+            # elif col > col_cnt and col < (col_cnt+3):
+            #     ws.row(row).write(col, val, no_borders)
+            elif row > 4 and col > 0:
+                ws.row(row).write(col, val, currency)
+            elif row > 4 and col > (col_cnt + 3):
                 ws.row(row).write(col, val, currency)
             else:
                 ws.row(row).write(col, val, headings)
