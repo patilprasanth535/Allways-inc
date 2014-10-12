@@ -1,6 +1,5 @@
 from xlwt import Alignment, Borders, Font, Column
 
-
 class ReportStyles():
     alignment = Alignment()
     font = Font()
